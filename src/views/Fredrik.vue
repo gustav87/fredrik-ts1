@@ -12,13 +12,16 @@
 </template>
 
 <script lang="ts">
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
 import Timer from '@/components/Timer.vue';
 
-export default {
-  name: "Fredrik",
+@Component({
   components: {
-    Timer
+    Timer,
   },
+})
+export default class Fredrik extends Vue {
   data(): {feedback: string, completed: boolean, msg: string, started: boolean} {
     return {
       feedback: '',
@@ -26,52 +29,51 @@ export default {
       msg: "Put the penis on Fredriks forehead",
       started: false
     }
-  },
-  methods: {
-    clicker(e: PointerEvent): void {
-      let x, y = 0;
-      const target = e.target as HTMLElement;
-      if (this.completed) {
-        return
-      }
-      const rect = target.getBoundingClientRect();
-      x = e.clientX - rect.left; //x position within the element.
-      y = e.clientY - rect.top;  //y position within the element.
-      console.log("Left: " + x + " ; Top: " + y);
-      this.checkClick(x, y)
-    },
-    checkClick(x: number, y: number): void {
-      if (x < 297 && x > 225 && y > 52 && y < 91) {
-        this.msg = "Well done!"
-        this.$refs.pImg.style = `top: ${y}px; left: ${x}px`
-        this.$refs.pImgContainer.style = "z-index: 1"
-        this.completed = true
-        this.$refs.timer.stop();
-        this.$refs.info.style = "color: green"
-      } else {
-        this.msg = "No, not there..."
-        this.$refs.info.style = "color: red"
-      }
-    },
-    reset(): void {
-      this.$refs.pImgContainer.style = "z-index: -1"
-      this.completed = false
-      this.msg = "Put the penis on Fredriks forehead"
-      this.$refs.info.style = "color: black"
-      this.$refs.timer.reset();
-      this.started = false;
-    },
-    startButtonClicked(): void {
-      this.started = true;
-    },
-    hejsan(): void {
-      console.log("tjenare");
-    }
-  },
-  mounted(): void {
-    this.hejsan()
   }
-};
+  public clicker(e: PointerEvent): void {
+    let x, y = 0;
+    const target = e.target as HTMLElement;
+    if (this.completed) {
+      return
+    }
+    const rect = target.getBoundingClientRect();
+    x = e.clientX - rect.left; //x position within the element.
+    y = e.clientY - rect.top;  //y position within the element.
+    console.log("Left: " + x + " ; Top: " + y);
+    this.checkClick(x, y)
+  }
+  public checkClick(x: number, y: number): void {
+    if (x < 297 && x > 225 && y > 52 && y < 91) {
+      this.msg = "Well done!"
+      this.$refs.pImg.style = `top: ${y}px; left: ${x}px`
+      this.$refs.pImgContainer.style = "z-index: 1"
+      this.completed = true
+      this.$refs.timer.stop();
+      this.$refs.info.style = "color: green"
+    } else {
+      this.msg = "No, not there..."
+      this.$refs.info.style = "color: red"
+    }
+  }
+  public reset(): void {
+    this.$refs.pImgContainer.style = "z-index: -1"
+    this.completed = false
+    this.msg = "Put the penis on Fredriks forehead"
+    this.$refs.info.style = "color: black"
+    this.$refs.timer.reset();
+    this.started = false;
+  }
+  public startButtonClicked(): void {
+    this.started = true;
+  }
+  public hejsan(): void {
+    console.log("tjenare");
+  }
+  mounted(): void {
+    this.hejsan();
+  }
+}
+
 </script>
 
 <style>
