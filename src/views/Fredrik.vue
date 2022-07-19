@@ -1,63 +1,75 @@
 <template>
   <div>
-    <p>Put the penis on Fredriks forehead</p>
+    <Timer ref="timer" @started="startButtonClicked"/>
+    <p ref="info">{{msg}} <span @click="reset" v-if="completed">Play again?</span></p>
     <div id="container">
-      <div id="pImgContainer"><img id="pImg" src="@/assets/pcursor.png"></div>
-      <img id="clickme" src="@/assets/fredrik.jpg">
-      <p id="feedback">{{feedback}} <span @click="reset" v-if="feedback=='Well done!'">Play again?</span></p>
+      <div id="pImgContainer" ref="pImgContainer">
+        <img id="pImg" ref="pImg" src="@/assets/pcursor.png">
+      </div>
+      <img id="clickme" :class="{setCursor:started}" ref="clickme" src="@/assets/fredrik.jpg" @click="started && clicker($event)">
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import Timer from '@/components/Timer.vue';
+
 export default {
   name: "Fredrik",
-  components: {},
-  data(): {feedback: string, completed: boolean} {
+  components: {
+    Timer
+  },
+  data(): {feedback: string, completed: boolean, msg: string, started: boolean} {
     return {
       feedback: '',
-      completed: false
+      completed: false,
+      msg: "Put the penis on Fredriks forehead",
+      started: false
     }
   },
   methods: {
-    init(): void {
+    clicker(e: PointerEvent): void {
       let x, y = 0;
-      this.img.onclick = e => {
-        if (this.completed) {
-          return
-        }
-        const rect = e.target.getBoundingClientRect();
-        x = e.clientX - rect.left; //x position within the element.
-        y = e.clientY - rect.top;  //y position within the element.
-        console.log("Left: " + x + " ; Top: " + y);
-        this.checkClick(x, y)
+      const target = e.target as HTMLElement;
+      if (this.completed) {
+        return
       }
+      const rect = target.getBoundingClientRect();
+      x = e.clientX - rect.left; //x position within the element.
+      y = e.clientY - rect.top;  //y position within the element.
+      console.log("Left: " + x + " ; Top: " + y);
+      this.checkClick(x, y)
     },
     checkClick(x: number, y: number): void {
       if (x < 297 && x > 225 && y > 52 && y < 91) {
-        this.img.style = "border: solid green 7px; cursor: default;"
-        this.feedback = "Well done!"
-        this.pImg.style = `top: ${y}px; left: ${x}px`
-        this.pImgContainer.style = "z-index: 1"
+        this.msg = "Well done!"
+        this.$refs.pImg.style = `top: ${y}px; left: ${x}px`
+        this.$refs.pImgContainer.style = "z-index: 1"
         this.completed = true
+        this.$refs.timer.stop();
+        this.$refs.info.style = "color: green"
       } else {
-        this.img.style = "border: solid red 7px;"
-        this.feedback = "No, not there..."
+        this.msg = "No, not there..."
+        this.$refs.info.style = "color: red"
       }
     },
     reset(): void {
-      console.log("hey");
-      this.pImgContainer.style = "z-index: -1"
-      this.img.style = "border: none"
+      this.$refs.pImgContainer.style = "z-index: -1"
       this.completed = false
-      this.feedback = ''
+      this.msg = "Put the penis on Fredriks forehead"
+      this.$refs.info.style = "color: black"
+      this.$refs.timer.reset();
+      this.started = false;
+    },
+    startButtonClicked(): void {
+      this.started = true;
+    },
+    hejsan(): void {
+      console.log("tjenare");
     }
   },
   mounted(): void {
-    this.img = document.getElementById('clickme')
-    this.pImg = document.getElementById('pImg')
-    this.pImgContainer = document.getElementById('pImgContainer')
-    this.init();
+    this.hejsan()
   }
 };
 </script>
@@ -77,10 +89,6 @@ body {
 p {
   font-size: 2em;
 }
-#feedback {
-  margin-top: 0;
-  margin-bottom: 10px;
-}
 #container {
   display: grid;
   justify-content: center;
@@ -93,16 +101,16 @@ p {
   position: absolute;
   left: 0;
   top: 0;
-  width: 50px;
-}
-img {
-  cursor: url('~@/assets/pcursor.png'), auto;
+  width: 65px;
 }
 #clickme, #pImgContainer {
   width: 474px;
   height: 584px;
   grid-column: 1;
   grid-row: 1;
+}
+.setCursor {
+  cursor: url('~@/assets/pcursor.png'), auto;
 }
 span {
   cursor: pointer;
