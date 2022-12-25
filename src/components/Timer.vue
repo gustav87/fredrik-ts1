@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { second } from '@/helpers/timerHelper'
 
 @Component
 export default class Timer extends Vue {
@@ -20,7 +21,7 @@ export default class Timer extends Vue {
   public start(): void {
     if (!this.timer) {
       this.timer = setInterval(() => {
-        this.elapsedTime += 1000;
+        this.elapsedTime += second();
       }, 1000)
     }
     this.gameStarted = true;
