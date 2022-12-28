@@ -5,6 +5,6 @@ RUN yarn build
 RUN npm install -g http-server
 ENV VIRTUAL_HOST=fredrik.gstav.se
 ENV LETSENCRYPT_HOST=fredrik.gstav.se
-EXPOSE 8080
-CMD npx http-server dist
+EXPOSE 80
+CMD npx http-server -p 80 dist
 
