@@ -1,10 +1,13 @@
 <template>
   <div>
-    <Timer ref="timer" @started="startButtonClicked"/>
-    <p ref="info">{{msg}} <span @click="reset" v-if="completed">Play again?</span></p>
+    <Timer ref="timer" @started="startButtonClicked" :stopClock="stopClock" :resetClock="resetClock"/>
+    <p ref="info" :style="{color: infoColor}">
+      {{msg}}
+      <span @click="reset" v-if="completed">Play again?</span>
+    </p>
     <div id="container">
-      <div id="pImgContainer" ref="pImgContainer">
-        <img id="pImg" ref="pImg" src="@/assets/pcursor.png">
+      <div id="pImgContainer" ref="pImgContainer" :style="{'z-index': zIndex}">
+        <img id="pImg" ref="pImg" :style="{top: topPosition, left: leftPosition}" src="@/assets/pcursor.png">
       </div>
       <img id="clickme" :class="{setCursor:started}" ref="clickme" src="@/assets/fredrik.jpg" @click="started && clicker($event)">
     </div>
@@ -22,20 +25,22 @@ import Timer from '@/components/Timer.vue';
   },
 })
 export default class Fredrik extends Vue {
-  data(): {feedback: string, completed: boolean, msg: string, started: boolean} {
-    return {
-      feedback: '',
-      completed: false,
-      msg: "Put the penis on Fredriks forehead",
-      started: false
-    }
-  }
+  public feedback = "";
+  public completed = false;
+  public msg = "Put the penis on Fredriks forehead";
+  public started = false;
+  public zIndex = -1;
+  public infoColor = "black"
+  public topPosition = "0px";
+  public leftPosition = "0px";
+  public stopClock = false;
+  public resetClock = false;
+
   public clicker(e: PointerEvent): void {
     let x, y = 0;
     const target = e.target as HTMLElement;
-    if (this.completed) {
-      return
-    }
+    if (this.completed) return;
+
     const rect = target.getBoundingClientRect();
     x = e.clientX - rect.left; //x position within the element.
     y = e.clientY - rect.top;  //y position within the element.
@@ -45,26 +50,30 @@ export default class Fredrik extends Vue {
   public checkClick(x: number, y: number): void {
     if (x < 297 && x > 225 && y > 52 && y < 91) {
       this.msg = "Well done!"
-      this.$refs.pImg.style = `top: ${y}px; left: ${x}px`
-      this.$refs.pImgContainer.style = "z-index: 1"
-      this.completed = true
-      this.$refs.timer.stop();
-      this.$refs.info.style = "color: green"
+      this.topPosition = `${y}px`;
+      this.leftPosition = `${x}px`;
+      this.zIndex = 1;
+      this.completed = true;
+      this.stopClock = true;
+      this.infoColor = "green";
     } else {
-      this.msg = "No, not there..."
-      this.$refs.info.style = "color: red"
+      this.msg = "No, not there...";
+      this.infoColor = "red";
     }
   }
+
   public reset(): void {
-    this.$refs.pImgContainer.style = "z-index: -1"
+    this.zIndex = -1;
     this.completed = false
     this.msg = "Put the penis on Fredriks forehead"
-    this.$refs.info.style = "color: black"
-    this.$refs.timer.reset();
+    this.infoColor = "black";
+    this.resetClock = true;
     this.started = false;
   }
+
   public startButtonClicked(): void {
     this.started = true;
+    console.log("Start button clicked");
   }
   public hejsan(): void {
     console.log("tjenare");
@@ -97,7 +106,6 @@ p {
 }
 #pImgContainer {
   position: relative;
-  z-index: -1;
 }
 #pImg {
   position: absolute;

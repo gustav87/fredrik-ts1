@@ -7,12 +7,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { second } from '@/helpers/timerHelper'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { tenMs } from '@/helpers/timerHelper'
 
 @Component
 export default class Timer extends Vue {
   @Prop() private msg!: string;
+  @Prop({ default: false }) stopClock?: boolean;
+  @Prop({ default: false }) resetClock?: boolean;
 
   elapsedTime = 0;
   timer = 0;
@@ -21,11 +23,21 @@ export default class Timer extends Vue {
   public start(): void {
     if (!this.timer) {
       this.timer = setInterval(() => {
-        this.elapsedTime += second();
-      }, 1000)
+        this.elapsedTime += tenMs();
+      }, 10)
     }
     this.gameStarted = true;
     this.$emit("started", 2)
+  }
+
+  @Watch("stopClock")
+  public onStopClock() {
+    this.stop();
+  }
+
+  @Watch("resetClock")
+  public onResetClock() {
+    this.reset();
   }
 
   public stop(): void {
@@ -38,7 +50,7 @@ export default class Timer extends Vue {
   }
   get formattedElapsedTime(): string {
     const date = new Date(0);
-    date.setSeconds(this.elapsedTime / 1000);
+    date.setSeconds(this.elapsedTime / 10);
     const utc = date.toUTCString();
     return utc.substr(utc.indexOf(":") - 2, 8);
   }
